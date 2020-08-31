@@ -128,13 +128,13 @@ public class MemoryAccessProviderData {
             for (int e = 0; e < i; e++) {
                 objects[e] = e;
             }
-            long firstValidOffset = UNSAFE.ARRAY_OBJECT_BASE_OFFSET;
-            long endOfObjectOffset = UNSAFE.ARRAY_OBJECT_BASE_OFFSET + i * UNSAFE.ARRAY_OBJECT_INDEX_SCALE;
+            long firstValidOffset = Unsafe.ARRAY_OBJECT_BASE_OFFSET;
+            long endOfObjectOffset = Unsafe.ARRAY_OBJECT_BASE_OFFSET + i * Unsafe.ARRAY_OBJECT_INDEX_SCALE;
             JavaConstant constant = CONSTANT_REFLECTION.forObject(objects);
             result.add(new Object[] {JavaKind.Object, constant, firstValidOffset, i == 0});
             result.add(new Object[] {JavaKind.Object, constant, (long) 0, true});
             result.add(new Object[] {JavaKind.Object, constant, (long) -1, true});
-            result.add(new Object[] {JavaKind.Object, constant, endOfObjectOffset - UNSAFE.ARRAY_OBJECT_INDEX_SCALE, i == 0});
+            result.add(new Object[] {JavaKind.Object, constant, endOfObjectOffset - Unsafe.ARRAY_OBJECT_INDEX_SCALE, i == 0});
             result.add(new Object[] {JavaKind.Object, constant, endOfObjectOffset, true});
             result.add(new Object[] {JavaKind.Object, constant, endOfObjectOffset + 100, true});
         }

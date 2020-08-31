@@ -426,8 +426,8 @@ public class AArch64TestAssembler extends TestAssembler {
     }
 
     private Register emitLoadInt(Register reg, int c) {
-        emitMovz(reg, (int)(c & 0xffff), 0);
-        emitMovk(reg, (int)((c >> 16) & 0xffff), 16);
+        emitMovz(reg, c & 0xffff, 0);
+        emitMovk(reg, (c >> 16) & 0xffff, 16);
         return reg;
     }
 

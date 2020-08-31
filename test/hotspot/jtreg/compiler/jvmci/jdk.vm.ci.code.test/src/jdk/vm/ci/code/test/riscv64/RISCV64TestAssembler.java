@@ -81,66 +81,67 @@ public class RISCV64TestAssembler extends TestAssembler {
         code.emitInt(instructionImmediate(0, 0, 0b000, 0, 0b0010011));
     }
 
-    private void emitAdd(Register Rd, Register Rm, Register Rn) {
+    private void emitAdd(Register rd, Register rm, Register rn) {
         // ADD
-        code.emitInt(instructionRegister(0b0000000, Rn.encoding, Rm.encoding, 0b000, Rd.encoding, 0b0110011));
+        code.emitInt(instructionRegister(0b0000000, rn.encoding, rm.encoding, 0b000, rd.encoding, 0b0110011));
     }
 
-    private void emitAdd(Register Rd, Register Rn, int imm12) {
+    private void emitAdd(Register rd, Register rn, int imm12) {
         // ADDI
-        code.emitInt(instructionImmediate(imm12 & 0xfff, Rn.encoding, 0b000, Rd.encoding, 0b0010011));
+        code.emitInt(instructionImmediate(imm12 & 0xfff, rn.encoding, 0b000, rd.encoding, 0b0010011));
     }
 
-    private void emitAddW(Register Rd, Register Rn, int imm12) {
+    private void emitAddW(Register rd, Register rn, int imm12) {
         // ADDIW
-        code.emitInt(instructionImmediate(imm12 & 0xfff, Rn.encoding, 0b000, Rd.encoding, 0b0011011));
+        code.emitInt(instructionImmediate(imm12 & 0xfff, rn.encoding, 0b000, rd.encoding, 0b0011011));
     }
 
-    private void emitSub(Register Rd, Register Rn, int imm12) {
+    private void emitSub(Register rd, Register rn, int imm12) {
         // SUBI
-        emitAdd(Rd, Rn, -imm12);;
+        emitAdd(rd, rn, -imm12);
     }
 
-    private void emitSub(Register Rd, Register Rm, Register Rn) {
+    private void emitSub(Register rd, Register rm, Register rn) {
         // SUB
-        code.emitInt(instructionRegister(0b0100000, Rn.encoding, Rm.encoding, 0b000, Rd.encoding, 0b0110011));
+        code.emitInt(instructionRegister(0b0100000, rn.encoding, rm.encoding, 0b000, rd.encoding, 0b0110011));
     }
 
-    private void emitMv(Register Rd, Register Rn) {
+    private void emitMv(Register rd, Register rn) {
         // MV
-        code.emitInt(instructionRegister(0b0000000, 0, Rn.encoding, 0b000, Rd.encoding, 0b0110011));
+        code.emitInt(instructionRegister(0b0000000, 0, rn.encoding, 0b000, rd.encoding, 0b0110011));
     }
 
-    private void emitShiftLeft(Register Rd, Register Rn, int shift) {
+    private void emitShiftLeft(Register rd, Register rn, int shift) {
         // SLLI
-        code.emitInt(instructionImmediate(shift & 0x3f, Rn.encoding, 0b001, Rd.encoding, 0b0010011));
+        code.emitInt(instructionImmediate(shift & 0x3f, rn.encoding, 0b001, rd.encoding, 0b0010011));
     }
 
-    private void emitShiftRight(Register Rd, Register Rn, int shift) {
+    private void emitShiftRight(Register rd, Register rn, int shift) {
         // SRLI
-        code.emitInt(instructionImmediate(shift & 0x3f, Rn.encoding, 0b101, Rd.encoding, 0b0010011));
+        code.emitInt(instructionImmediate(shift & 0x3f, rn.encoding, 0b101, rd.encoding, 0b0010011));
     }
 
-    private void emitLui(Register Rd, int imm20) {
+    private void emitLui(Register rd, int imm20) {
         // LUI
-        code.emitInt(f(imm20, 31, 12) | f(Rd, 11, 7) | f(0b0110111, 6, 0));
+        code.emitInt(f(imm20, 31, 12) | f(rd, 11, 7) | f(0b0110111, 6, 0));
     }
 
-    private void emitAuipc(Register Rd, int imm20) {
+    private void emitAuipc(Register rd, int imm20) {
         // AUIPC
-        code.emitInt(f(imm20, 31, 12) | f(Rd, 11, 7) | f(0b0010111, 6, 0));
+        code.emitInt(f(imm20, 31, 12) | f(rd, 11, 7) | f(0b0010111, 6, 0));
     }
 
-    private void emitLoadImmediate(Register Rd, int imm32) {
-        long upper = imm32, lower = imm32;
+    private void emitLoadImmediate(Register rd, int imm32) {
+        long upper = imm32;
+        long lower = imm32;
         lower = (lower << 52) >> 52;
         upper -= lower;
         upper = (int) upper;
-        emitLui(Rd, ((int) (upper >> 12)) & 0xfffff);
-        emitAddW(Rd, Rd, (int) lower);
+        emitLui(rd, ((int) (upper >> 12)) & 0xfffff);
+        emitAddW(rd, rd, (int) lower);
     }
 
-    private void emitLoadRegister(Register Rd, RISCV64Kind kind, Register Rn, int offset) {
+    private void emitLoadRegister(Register rd, RISCV64Kind kind, Register rn, int offset) {
         // LB/LH/LW/LD (immediate)
         assert offset >= 0;
         int size = 0;
@@ -154,10 +155,10 @@ public class RISCV64TestAssembler extends TestAssembler {
             case DOUBLE: size = 0b011; opc = 0b0000111; break;
             default: throw new IllegalArgumentException();
         }
-        code.emitInt(f(offset, 31, 20) | f(Rn, 19, 15) | f(size, 14, 12) | f(Rd, 11, 7) | f(opc, 6, 0));
+        code.emitInt(f(offset, 31, 20) | f(rn, 19, 15) | f(size, 14, 12) | f(rd, 11, 7) | f(opc, 6, 0));
     }
 
-    private void emitStoreRegister(Register Rd, RISCV64Kind kind, Register Rn, int offset) {
+    private void emitStoreRegister(Register rd, RISCV64Kind kind, Register rn, int offset) {
         // SB/SH/SW/SD (immediate)
         assert offset >= 0;
         int size = 0;
@@ -171,21 +172,21 @@ public class RISCV64TestAssembler extends TestAssembler {
             case DOUBLE: size = 0b011; opc = 0b0100111; break;
             default: throw new IllegalArgumentException();
         }
-        code.emitInt(f((offset >> 5), 31, 25) | f(Rd, 24, 20) | f(Rn, 19, 15) | f(size, 14, 12) | f((offset & 0x1f), 11, 7) | f(opc, 6, 0));
+        code.emitInt(f((offset >> 5), 31, 25) | f(rd, 24, 20) | f(rn, 19, 15) | f(size, 14, 12) | f((offset & 0x1f), 11, 7) | f(opc, 6, 0));
     }
 
-    private void emitJalr(Register Rd, Register Rn, int imm) {
-        code.emitInt(instructionImmediate(imm & 0xfff, Rn.encoding, 0b000, Rd.encoding, 0b1100111));
+    private void emitJalr(Register rd, Register rn, int imm) {
+        code.emitInt(instructionImmediate(imm & 0xfff, rn.encoding, 0b000, rd.encoding, 0b1100111));
     }
 
-    private void emitFmv(Register Rd, RISCV64Kind kind, Register Rn) {
+    private void emitFmv(Register rd, RISCV64Kind kind, Register rn) {
         int funct = 0;
         switch (kind) {
             case SINGLE: funct = 0b1111000; break;
             case DOUBLE: funct = 0b1111001; break;
             default: throw new IllegalArgumentException();
         }
-        code.emitInt(instructionRegister(funct, 0b00000, Rn.encoding, 0b000, Rd.encoding, 0b1010011));
+        code.emitInt(instructionRegister(funct, 0b00000, rn.encoding, 0b000, rd.encoding, 0b1010011));
     }
 
     @Override
@@ -220,7 +221,7 @@ public class RISCV64TestAssembler extends TestAssembler {
     @Override
     public void emitEpilogue() {
         recordMark(config.MARKID_DEOPT_HANDLER_ENTRY);
-        recordCall(new HotSpotForeignCallTarget(config.handleDeoptStub), 6*4, true, null);
+        recordCall(new HotSpotForeignCallTarget(config.handleDeoptStub), 6 * 4, true, null);
         emitCall(0xdeaddeaddeadL);
     }
 
@@ -278,7 +279,8 @@ public class RISCV64TestAssembler extends TestAssembler {
     }
 
     private void emitLoad32(Register ret, int addr) {
-        long upper = addr, lower = addr;
+        long upper = addr;
+        long lower = addr;
         lower = (lower << 52) >> 52;
         upper -= lower;
         upper = (int) upper;
@@ -420,16 +422,12 @@ public class RISCV64TestAssembler extends TestAssembler {
 
     @Override
     public Register emitIntArg0() {
-        return codeCache.getRegisterConfig()
-            .getCallingConventionRegisters(HotSpotCallingConventionType.JavaCall, JavaKind.Int)
-            .get(0);
+        return codeCache.getRegisterConfig().getCallingConventionRegisters(HotSpotCallingConventionType.JavaCall, JavaKind.Int).get(0);
     }
 
     @Override
     public Register emitIntArg1() {
-        return codeCache.getRegisterConfig()
-            .getCallingConventionRegisters(HotSpotCallingConventionType.JavaCall, JavaKind.Int)
-            .get(1);
+        return codeCache.getRegisterConfig().getCallingConventionRegisters(HotSpotCallingConventionType.JavaCall, JavaKind.Int).get(1);
     }
 
     @Override

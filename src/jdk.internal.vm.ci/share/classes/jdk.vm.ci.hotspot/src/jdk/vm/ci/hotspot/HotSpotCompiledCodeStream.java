@@ -251,6 +251,7 @@ final class HotSpotCompiledCodeStream implements AutoCloseable {
             this.obj = obj;
         }
 
+        @SuppressFBWarnings(value = "NP_EQUALS_SHOULD_HANDLE_NULL_ARGUMENT", justification = "used in map that never has null keys")
         @Override
         public boolean equals(Object other) {
             IdentityBox that = (IdentityBox) other;

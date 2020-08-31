@@ -591,12 +591,12 @@ public final class HotSpotConstantPool implements ConstantPool, MetaspaceHandleO
 
         @Override
         public String toString() {
-            String static_args = staticArguments.stream().map(BootstrapMethodInvocationImpl::argumentAsString).collect(Collectors.joining(", ", "[", "]"));
+            String staticArgs = staticArguments.stream().map(BootstrapMethodInvocationImpl::argumentAsString).collect(Collectors.joining(", ", "[", "]"));
             return "BootstrapMethod[" + (indy ? "indy" : "condy") +
                             ", method:" + method.format("%H.%n(%p)") +
                             ", name: " + name +
                             ", type: " + type.toValueString() +
-                            ", static arguments:" + static_args;
+                            ", static arguments:" + staticArgs;
         }
 
         private static String argumentAsString(JavaConstant arg) {

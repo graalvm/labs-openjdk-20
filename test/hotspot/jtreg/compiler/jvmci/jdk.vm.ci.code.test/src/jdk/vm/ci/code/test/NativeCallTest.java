@@ -71,7 +71,7 @@ public class NativeCallTest extends CodeInstallationTest {
         long d = 412435326;
         double e = .31212333;
         float f = 8.7654321f;
-        Class<?>[] argClazz = new Class[]{float.class, double.class, int.class, long.class, double.class,
+        Class<?>[] argClazz = new Class<?>[]{float.class, double.class, int.class, long.class, double.class,
                         float.class};
         test("SDILDS", getSDILDS(), float.class, argClazz, new Object[]{a, b, c, d, e, f});
     }
@@ -88,7 +88,7 @@ public class NativeCallTest extends CodeInstallationTest {
                         .31212333D, double.class,
                         8.7654321F, float.class
         };
-        Class<?>[] argClazz = new Class[sCount + remainingArgs.length / 2];
+        Class<?>[] argClazz = new Class<?>[sCount + remainingArgs.length / 2];
         Object[] argValues = new Object[sCount + remainingArgs.length / 2];
         for (int i = 0; i < sCount; i++) {
             argValues[i] = (float) i;
@@ -113,7 +113,7 @@ public class NativeCallTest extends CodeInstallationTest {
                         .31212333D, double.class,
                         8.7654321F, float.class
         };
-        Class<?>[] argClazz = new Class[sCount + remainingArgs.length / 2];
+        Class<?>[] argClazz = new Class<?>[sCount + remainingArgs.length / 2];
         Object[] argValues = new Object[sCount + remainingArgs.length / 2];
         for (int i = 0; i < sCount; i++) {
             argValues[i] = i;
