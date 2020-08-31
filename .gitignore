@@ -18,3 +18,15 @@ NashornProfile.txt
 /src/utils/LogCompilation/target/
 /.project/
 /.settings/
+/mxbuild/
+**/.checkstyle
+**/.classpath
+**/.externalToolBuilders
+**/.factorypath
+**/.idea
+**/.metadata/
+**/.project
+**/.pydevproject
+**/.settings/
+**/*.pyc
+**/eclipse-launches/
