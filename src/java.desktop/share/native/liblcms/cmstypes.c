@@ -5334,6 +5334,8 @@ Error:
    FreeArray(&a);
    if (hDict != NULL) cmsDictFree(hDict);
    return NULL;
+
+   cmsUNUSED_PARAMETER(SizeOfTag);
 }
 
 
