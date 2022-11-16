@@ -161,11 +161,8 @@ local contains(str, needle) = std.findSubstr(needle, str) != [];
     MuslBootJDK:: {
         downloads+: {
             BOOT_JDK: {
-                build_id: "9",
-                name: "jpg-jdk",
-                version: "19",
-                release: true,
-                musl: true,
+                name: "labsjdk",
+                version: "ee-20+22-jvmci-23.0-b02-musl-boot",
                 platformspecific: true
             }
         },
@@ -246,7 +243,7 @@ local contains(str, needle) = std.findSubstr(needle, str) != [];
         ] +
         build_labsjdk("release", "JAVA_HOME") +
         build_labsjdk("fastdebug", "JAVA_HOME_FASTDEBUG") +
-        [
+        (if !is_musl_build then [
             ["set-export", "PATH", "${OLD_PATH}"],
 
             # Prepare for publishing
@@ -255,7 +252,7 @@ local contains(str, needle) = std.findSubstr(needle, str) != [];
             conf.copydir(conf.jdk_home("."), "${JDK_HOME}"),
             ["cd", "${JAVA_HOME_FASTDEBUG}"],
             conf.copydir(conf.jdk_home("."), "${JDK_HOME}_fastdebug")
-        ],
+        ] else []),
 
         publishArtifacts+: if !is_musl_build then [
             {
