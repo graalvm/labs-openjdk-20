@@ -316,14 +316,13 @@ local contains(str, needle) = std.findSubstr(needle, str) != [];
         logs: ["*.log"],
         targets: ["gate"],
         run+: if !fastdebug then [
-            ["mx", "--java-home=${JAVA_HOME}", "-p", "graal-enterprise/graal-enterprise", "gate", "--tags", "build,test,bootstraplite"]
+            ["mx", "--java-home=${JAVA_HOME}", "-p", "graal-enterprise/graal-enterprise", "gate", "--tags", "build,bootstraplite"]
         ] else [
             # Since fastdebug is slow, build with product
             ["mx", "--java-home=${JAVA_HOME}", "-p", "graal/compiler", "build"],
             if std.findSubstr("aarch64", conf.name) != [] then
                 # The AArch64 CI machines are a little slower so avoid running the Truffle compiler tests
-                ["mx", "--java-home=${JAVA_HOME_FASTDEBUG}", "-p", "graal/compiler", "unittest", "--suite", "compiler", "--fail-fast", "-XX:-UseJVMCICompiler", "&&",
-                 "mx", "--java-home=${JAVA_HOME_FASTDEBUG}", "-p", "graal/compiler", "gate", "--tags", "bootstraplite"]
+                ["mx", "--java-home=${JAVA_HOME_FASTDEBUG}", "-p", "graal/compiler", "gate", "--tags", "bootstraplite"]
             else
                 ["mx", "--java-home=${JAVA_HOME_FASTDEBUG}", "-p", "graal/compiler", "gate", "--tags", "bootstraplite"]
         ]
