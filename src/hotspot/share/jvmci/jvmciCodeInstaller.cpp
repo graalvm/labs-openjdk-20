@@ -825,6 +825,7 @@ void CodeInstaller::initialize_fields(HotSpotCompiledCodeStream* stream, u1 code
   }
   _constants_size = data_section_size;
   _next_call_type = INVOKE_INVALID;
+  _has_monitors = false;
   _has_wide_vector = false;
   _nmethod_entry_patch_offset = -1;
 }
