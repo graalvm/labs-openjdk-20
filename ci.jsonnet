@@ -1,7 +1,7 @@
 # https://github.com/graalvm/labs-openjdk-20/blob/master/doc/testing.md
 local run_test_spec = "test/hotspot/jtreg/compiler/jvmci test/jdk/tools/jlink/plugins";
 
-local labsjdk_builder_version = "b052f1812b4e24c2e118283c44e886e6555baa3d";
+local labsjdk_builder_version = "d38338eb1cf33e0e6c14fd2969565665d102f530";
 
 # Returns true if `str` contains `needle` as a substring.
 local contains(str, needle) = std.findSubstr(needle, str) != [];
@@ -210,6 +210,7 @@ local contains(str, needle) = std.findSubstr(needle, str) != [];
             ["python3", "-u", conf.path("${LABSJDK_BUILDER_DIR}/build_labsjdk.py"),
                 "--boot-jdk=${BOOT_JDK}",
                 "--clean-after-build",
+                "--uploader=disabled",
                 "--jdk-debug-level=" + jdk_debug_level,
                 "--test=" + run_test_spec,
                 "--java-home-link-target=${%s}" % java_home_env_var,
