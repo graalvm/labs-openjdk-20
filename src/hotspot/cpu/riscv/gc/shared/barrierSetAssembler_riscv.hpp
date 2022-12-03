@@ -34,7 +34,6 @@
 
 enum class NMethodPatchingType {
   stw_instruction_and_data_patch,
-  conc_instruction_and_data_patch,
   conc_data_patch
 };
 
@@ -76,8 +75,7 @@ public:
 
   virtual bool supports_instruction_patching() {
     NMethodPatchingType patching_type = nmethod_patching_type();
-    return patching_type == NMethodPatchingType::conc_instruction_and_data_patch ||
-            patching_type == NMethodPatchingType::stw_instruction_and_data_patch;
+    return patching_type == NMethodPatchingType::stw_instruction_and_data_patch;
   }
 
   static address patching_epoch_addr();
