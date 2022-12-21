@@ -220,6 +220,27 @@ void BarrierSetAssembler::nmethod_entry_barrier(MacroAssembler* masm, Label* slo
     Address thread_disarmed_addr(rthread, in_bytes(bs_nm->thread_disarmed_offset()));
     __ ldrw(rscratch2, thread_disarmed_addr);
     __ cmp(rscratch1, rscratch2);
+  } else if (patching_type == NMethodPatchingType::conc_instruction_and_data_patch) {
+    // If we patch code we need both a code patching and a loadload
+    // fence. It's not super cheap, so we use a global epoch mechanism
+    // to hide them in a slow path.
+    // The high level idea of the global epoch mechanism is to detect
+    // when any thread has performed the required fencing, after the
+    // last nmethod was disarmed. This implies that the required
+    // fencing has been performed for all preceding nmethod disarms
+    // as well. Therefore, we do not need any further fencing.
+    __ lea(rscratch2, ExternalAddress((address)&_patching_epoch));
+    // Embed an artificial data dependency to order the guard load
+    // before the epoch load.
+    __ orr(rscratch2, rscratch2, rscratch1, Assembler::LSR, 32);
+    // Read the global epoch value.
+    __ ldrw(rscratch2, rscratch2);
+    // Combine the guard value (low order) with the epoch value (high order).
+    __ orr(rscratch1, rscratch1, rscratch2, Assembler::LSL, 32);
+    // Compare the global values with the thread-local values.
+    Address thread_disarmed_and_epoch_addr(rthread, in_bytes(bs_nm->thread_disarmed_offset()));
+    __ ldr(rscratch2, thread_disarmed_and_epoch_addr);
+    __ cmp(rscratch1, rscratch2);
   } else {
     assert(patching_type == NMethodPatchingType::conc_data_patch, "must be");
     // Subsequent loads of oops must occur after load of guard value.
