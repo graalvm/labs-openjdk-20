@@ -13,7 +13,7 @@ local contains(str, needle) = std.findSubstr(needle, str) != [];
     mxDependencies:: {
         python_version: "3",
         packages+: {
-            mx: "6.12.5",
+            mx: "6.14.16",
             python3: "==3.8.10",
             'pip:pylint': '==2.4.4',
       },
@@ -434,7 +434,7 @@ local contains(str, needle) = std.findSubstr(needle, str) != [];
             [ self.CompilerTests(defs, conf, fastdebug=true) for conf in graal_confs(defs) ] +
             [ self.CompilerTests(defs, conf, fastdebug=false) for conf in graal_confs(defs) ] +
 
-            # GR-42451 [ self.JavaScriptTests(defs, conf) for conf in graal_confs(defs) ] +
+            [ self.JavaScriptTests(defs, conf) for conf in graal_confs(defs) ] +
 
             # GR-42452 [ self.BuildLibGraal(defs, conf) for conf in graal_confs(defs) ] +
             # GR-42452 [ self.TestLibGraal(defs, conf) for conf in graal_confs(defs) ] +
