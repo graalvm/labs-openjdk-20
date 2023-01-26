@@ -75,6 +75,7 @@ bool CompilerToVM::Data::continuations_enabled;
 
 #ifdef AARCH64
 int CompilerToVM::Data::BarrierSetAssembler_nmethod_patching_type;
+address CompilerToVM::Data::BarrierSetAssembler_patching_epoch_addr;
 #endif
 
 size_t CompilerToVM::Data::ThreadLocalAllocBuffer_alignment_reserve;
@@ -141,6 +142,7 @@ void CompilerToVM::Data::initialize(JVMCI_TRAPS) {
     AARCH64_ONLY(nmethod_entry_barrier = StubRoutines::aarch64::method_entry_barrier());
     BarrierSetAssembler* bs_asm = BarrierSet::barrier_set()->barrier_set_assembler();
     AARCH64_ONLY(BarrierSetAssembler_nmethod_patching_type = (int) bs_asm->nmethod_patching_type());
+    AARCH64_ONLY(BarrierSetAssembler_patching_epoch_addr = bs_asm->patching_epoch_addr());
   }
 
   if (UseZGC) {

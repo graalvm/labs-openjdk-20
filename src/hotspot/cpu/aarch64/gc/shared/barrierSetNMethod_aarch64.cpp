@@ -35,6 +35,7 @@
 #include "runtime/sharedRuntime.hpp"
 #include "runtime/registerMap.hpp"
 #include "utilities/align.hpp"
+#include "utilities/formatBuffer.hpp"
 #include "utilities/debug.hpp"
 #if INCLUDE_JVMCI
 #include "jvmci/jvmciRuntime.hpp"
@@ -56,6 +57,8 @@ static int entry_barrier_offset(nmethod* nm) {
   switch (bs_asm->nmethod_patching_type()) {
   case NMethodPatchingType::stw_instruction_and_data_patch:
     return -4 * (4 + slow_path_size(nm));
+  case NMethodPatchingType::conc_instruction_and_data_patch:
+    return -4 * (10 + slow_path_size(nm));
   case NMethodPatchingType::conc_data_patch:
     return -4 * (5 + slow_path_size(nm));
   }
@@ -81,7 +84,6 @@ class NativeNMethodBarrier {
 
 public:
   NativeNMethodBarrier(nmethod* nm): _nm(nm) {
-    address barrier_address;
 #if INCLUDE_JVMCI
     if (nm->is_compiled_by_jvmci()) {
       _instruction_address = nm->code_begin() + nm->frame_complete_offset();
@@ -186,15 +188,6 @@ void BarrierSetNMethod::disarm(nmethod* nm) {
     return;
   }
 
-  // The patching epoch is incremented before the nmethod is disarmed. Disarming
-  // is performed with a release store. In the nmethod entry barrier, the values
-  // are read in the opposite order, such that the load of the nmethod guard
-  // acquires the patching epoch. This way, the guard is guaranteed to block
-  // entries to the nmethod, until it has safely published the requirement for
-  // further fencing by mutators, before they are allowed to enter.
-  BarrierSetAssembler* bs_asm = BarrierSet::barrier_set()->barrier_set_assembler();
-  bs_asm->increment_patching_epoch();
-
   // Disarms the nmethod guard emitted by BarrierSetAssembler::nmethod_entry_barrier.
   // Symmetric "LDR; DMB ISHLD" is in the nmethod barrier.
   NativeNMethodBarrier barrier(nm);
@@ -216,7 +209,6 @@ void BarrierSetNMethod::arm(nmethod* nm, int arm_value) {
     BarrierSetAssembler* bs_asm = BarrierSet::barrier_set()->barrier_set_assembler();
     bs_asm->increment_patching_epoch();
   }
-
 
   NativeNMethodBarrier barrier(nm);
   barrier.set_value(arm_value);

@@ -391,7 +391,8 @@ C2V_VMENTRY_NULL(jobject, getResolvedJavaType0, (JNIEnv* env, jobject, jobject b
       Handle base_oop = JVMCIENV->asConstant(base_object, JVMCI_CHECK_NULL);
       klass = base_oop->klass();
     } else {
-      assert(false, "What types are we actually expecting here?");
+      JVMCI_THROW_MSG_NULL(IllegalArgumentException,
+                           err_msg("Unexpected arguments: %s " JLONG_FORMAT " %s", JVMCIENV->klass_name(base_object), offset, compressed ? "true" : "false"));
     }
   } else if (!compressed) {
     if (base_object.is_non_null()) {
@@ -413,6 +414,17 @@ C2V_VMENTRY_NULL(jobject, getResolvedJavaType0, (JNIEnv* env, jobject, jobject b
       }
     }
     klass = *((Klass**) (intptr_t) (base_address + offset));
+    if (klass == nullptr) {
+      return nullptr;
+    }
+    if (base_object.is_non_null()) {
+      // Reads from real objects are expected to be strongly reachable
+      guarantee(klass->is_loader_alive(), "klass must be alive");
+    } else if (!klass->is_loader_alive()) {
+      // Reads from other memory like the HotSpotMethodData might be concurrently unloading so
+      // return null in that case.
+      return nullptr;
+    }
   } else {
     JVMCI_THROW_MSG_NULL(IllegalArgumentException,
                 err_msg("Unexpected arguments: %s " JLONG_FORMAT " %s",
