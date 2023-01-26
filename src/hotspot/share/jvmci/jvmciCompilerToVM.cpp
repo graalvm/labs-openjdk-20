@@ -391,7 +391,8 @@ C2V_VMENTRY_NULL(jobject, getResolvedJavaType0, (JNIEnv* env, jobject, jobject b
       Handle base_oop = JVMCIENV->asConstant(base_object, JVMCI_CHECK_NULL);
       klass = base_oop->klass();
     } else {
-      assert(false, "What types are we actually expecting here?");
+      JVMCI_THROW_MSG_NULL(IllegalArgumentException,
+                           err_msg("Unexpected arguments: %s " JLONG_FORMAT " %s", JVMCIENV->klass_name(base_object), offset, compressed ? "true" : "false"));
     }
   } else if (!compressed) {
     if (base_object.is_non_null()) {
