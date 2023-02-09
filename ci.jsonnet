@@ -13,7 +13,7 @@ local contains(str, needle) = std.findSubstr(needle, str) != [];
     mxDependencies:: {
         python_version: "3",
         packages+: {
-            mx: "6.14.18",
+            mx: "6.15.1",
             python3: "==3.8.10",
             'pip:pylint': '==2.4.4',
       },
