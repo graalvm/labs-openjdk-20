@@ -4,7 +4,9 @@
  *
  * This code is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License version 2 only, as
- * published by the Free Software Foundation.
+ * published by the Free Software Foundation.  Oracle designates this
+ * particular file as subject to the "Classpath" exception as provided
+ * by Oracle in the LICENSE file that accompanied this code.
  *
  * This code is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
@@ -21,6 +23,23 @@
  * questions.
  */
 
-class MethodRefQualifyingTypeTest$MethodSupplierImpl {
-    int m(int a) { return a; }
+package sun.security.util;
+
+import java.math.BigInteger;
+import javax.crypto.spec.DHParameterSpec;
+
+/**
+ * Internal marker class for well-known safe DH parameters. It should
+ * only be used with trusted callers since it does not have all the needed
+ * values for validation.
+ */
+
+public final class SafeDHParameterSpec extends DHParameterSpec {
+    public SafeDHParameterSpec(BigInteger p, BigInteger g) {
+        super(p, g);
+    }
+
+    public SafeDHParameterSpec(BigInteger p, BigInteger g, int l) {
+        super(p, g, l);
+    }
 }
