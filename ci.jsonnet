@@ -13,7 +13,7 @@ local contains(str, needle) = std.findSubstr(needle, str) != [];
     mxDependencies:: {
         python_version: "3",
         packages+: {
-            mx: "6.15.1",
+            mx: "HEAD",
             python3: "==3.8.10",
             'pip:pylint': '==2.4.4',
       },
@@ -281,6 +281,9 @@ local contains(str, needle) = std.findSubstr(needle, str) != [];
 
         run+: [
             ["git", "clone", defs.graal_enterprise_url],
+
+            # Reset mx to the version expected by Graal
+            ["git", "-C", "$MX_HOME", "reset", "--hard", ["python3", "-c", "import json; print(json.load(open('" + self.path("graal-enterprise/common.json") + "'))['mx_version'])"]],
 
             # This puts cygwin on the PATH so that `test` and `cat` are available
             ["set-export", "OLD_PATH", "${PATH}"],
