@@ -60,9 +60,14 @@ def load_jib_devkits():
         jib_profiles = fp.read()
     devkit_platform_revisions = re.search(r'var devkit_platform_revisions *= *{([^}]+)}', jib_profiles).group(1)
     for entry in devkit_platform_revisions.split(','):
-        devkit = entry.strip().split(':')[1]
-        devkit = devkit.strip()[1:-1] # strip surrounding ""
-        devkits.add(devkit)
+        if len(entry.strip().split('?')) == 2 :
+            multiple_devkit = entry.strip().split('?')[1].split(':')
+            devkits.add(multiple_devkit[0].strip()[1:-1])
+            devkits.add(multiple_devkit[1].strip()[1:-1])
+        else :
+            devkit = entry.strip().split(':')[1]
+            devkit = devkit.strip()[1:-1] # strip surrounding ""
+            devkits.add(devkit)
     return devkits
 
 def load_ci_devkits():
