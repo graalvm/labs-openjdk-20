@@ -78,11 +78,15 @@ class NativeNMethodBarrier {
 
 public:
   NativeNMethodBarrier(nmethod* nm): _nm(nm) {
-    address barrier_address;
 #if INCLUDE_JVMCI
     if (nm->is_compiled_by_jvmci()) {
-      _instruction_address = nm->code_begin() + nm->frame_complete_offset();
-      _guard_addr = reinterpret_cast<int*>(nm->consts_begin() + nm->jvmci_nmethod_data()->nmethod_entry_patch_offset());
+      address pc = nm->code_begin() + nm->jvmci_nmethod_data()->nmethod_entry_patch_offset();
+      RelocIterator iter(nm, pc, pc + 4);
+      guarantee(iter.next(), "missing relocs");
+      guarantee(iter.type() == relocInfo::section_word_type, "unexpected reloc");
+
+      _guard_addr = (int*) iter.section_word_reloc()->target();
+      _instruction_address = pc;
     } else
 #endif
       {
@@ -112,9 +116,9 @@ public:
     Atomic::release_store(guard_addr(), value);
   }
 
-  bool check_barrier(FormatBuffer<>& msg) const;
+  bool check_barrier(err_msg& msg) const;
   void verify() const {
-    FormatBuffer<> msg("%s", "");
+    err_msg msg("%s", "");
     assert(check_barrier(msg), "%s", msg.buffer());
   }
 };
@@ -138,7 +142,7 @@ static const struct CheckInsn barrierInsn[] = {
 // The encodings must match the instructions emitted by
 // BarrierSetAssembler::nmethod_entry_barrier. The matching ignores the specific
 // register numbers and immediate values in the encoding.
-bool NativeNMethodBarrier::check_barrier(FormatBuffer<>& msg) const {
+bool NativeNMethodBarrier::check_barrier(err_msg& msg) const {
   intptr_t addr = (intptr_t) instruction_address();
   for(unsigned int i = 0; i < sizeof(barrierInsn)/sizeof(struct CheckInsn); i++ ) {
     uint32_t inst = *((uint32_t*) addr);
@@ -241,7 +245,7 @@ bool BarrierSetNMethod::is_armed(nmethod* nm) {
 }
 
 #if INCLUDE_JVMCI
-bool BarrierSetNMethod::verify_barrier(nmethod* nm, FormatBuffer<>& msg) {
+bool BarrierSetNMethod::verify_barrier(nmethod* nm, err_msg& msg) {
   NativeNMethodBarrier barrier(nm);
   return barrier.check_barrier(msg);
 }
