@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003, 2022, Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2003, 2023, Oracle and/or its affiliates. All rights reserved.
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
  * This code is free software; you can redistribute it and/or modify it
@@ -360,7 +360,8 @@ class StubGenerator: public StubCodeGenerator {
 
   // Utility routine for increase 128bit counter (iv in CTR mode)
   void inc_counter(Register reg, XMMRegister xmmdst, int inc_delta, Label& next_block);
-
+  void ev_add128(XMMRegister xmmdst, XMMRegister xmmsrc1, XMMRegister xmmsrc2,
+                 int vector_len, KRegister ktmp, Register rscratch = noreg);
   void generate_aes_stubs();
 
 
@@ -468,6 +469,8 @@ class StubGenerator: public StubCodeGenerator {
   address generate_bigIntegerRightShift();
   address generate_bigIntegerLeftShift();
 
+  address generate_float16ToFloat();
+  address generate_floatToFloat16();
 
   // Libm trigonometric stubs
 

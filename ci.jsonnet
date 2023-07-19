@@ -271,7 +271,7 @@ local contains(str, needle) = std.findSubstr(needle, str) != [];
     },
 
     # Downstream Graal branch to test against.
-    local downstream_branch = "release/graal-vm/23.0",
+    local downstream_branch = "cpu/graal-vm/23.0",
 
     local clone_graal(defs) = {
         # Checkout the graal-enterprise repo to the "_gate" version of the
